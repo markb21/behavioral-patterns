@@ -1,2 +1,2 @@
 # patterns
-patterns seminar
+Project for JavaScript patterns seminar TUM
