@@ -1,15 +1,9 @@
-# Retro games
-
-Skeletal versions of Asteroids, Lunar Lander, Space Invaders and Snake in JavaScript.  Written as practice for my workshop at Strange Loop 2014.
-
-* By Mary Rose Cook
-* http://maryrosecook.com
-* maryrosecook@maryrosecook.com
-
-![Screenshot of Asteroids](asteroids/screenshot.png)
-
-![Screenshot of Lunar Lander](lunar-lander/screenshot.png)
-
-![Screenshot of Space Invaders](space-invaders/screenshot.png)
+# snake
+Retro snake game written in JavaScript.
 
 ![Screenshot of Snake](snake/screenshot.png)
+
+## Refactoring
+In code was introduced command pattern which decouples boundary objects(keyboard keys) from implementation of action(particular commands) and separates them from entity objects(attributes that specify directions).
+Refactoring made it easy to reuse the code for changing direction of snake e.g.: when multi player option would be introduced.
+

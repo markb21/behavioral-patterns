@@ -1,2 +1,2 @@
-# patterns
-Project for JavaScript patterns seminar TUM
+# JavaScript behavioural patterns
+Repository for work done in JavaScript patterns seminar(TUM)
