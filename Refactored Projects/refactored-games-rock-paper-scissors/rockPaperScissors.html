@@ -1,0 +1,77 @@
+<script>
+//The Game
+//Each player chooses either rock, paper or scissors
+//Rock destroys scissors
+//Scissors cut paper
+//Paper covers rock
+
+//Phases
+//1. User makes a choice
+//2. Computer makes a choice
+//3. A compare function will determine who wins.
+
+var tie = {
+	handle: function(choice1, choice2){
+		if(choice1===choice2) 
+			return "The result is a tie!";
+		else
+			return tie.__proto__.handle(choice1, choice2);
+	}
+};
+
+var rockWins = {
+	handle: function(choice1, choice2){
+		if((choice1 === "rock" || choice2 === "rock") && (choice1 === "scissors" || choice2 === "scissors")) 
+			return "rock wins";
+		else
+			return rockWins.__proto__.handle(choice1, choice2);
+	}
+};
+
+var paperWins = {
+	handle: function(choice1, choice2){
+		if((choice1 === "rock" || choice2 === "rock") && (choice1 === "paper" || choice2 === "paper")) 
+			return "paper wins";
+		else
+			return paperWins.__proto__.handle(choice1, choice2);
+	}
+};
+
+var scissorsWins = {
+	handle: function(choice1, choice2){
+		if((choice1 === "scissors" || choice2 === "scissors") && (choice1 === "paper" || choice2 === "paper")) 
+			return "scissors wins";
+		else
+			return scissorsWins.__proto__.handle(choice1, choice2);
+	}
+};
+
+var other = {
+	handle: function(choice1, choice2){
+		return "Error: Unidentified input";
+	}
+};
+
+tie.__proto__ = rockWins;
+rockWins.__proto__ = paperWins;
+paperWins.__proto__ = scissorsWins;
+scissorsWins.__proto__ = other;
+
+var userChoice = prompt("Do you choose rock, paper or scissors?");
+var computerChoice = Math.random();
+if (computerChoice < 0.34) {
+computerChoice = "rock";
+} else if(computerChoice <= 0.67) {
+computerChoice = "paper";
+} else {
+computerChoice = "scissors";
+}
+console.log("Computer: " + computerChoice);
+alert("Computer: " + computerChoice);
+
+var compare = function(choice1,choice2) {
+	return tie.handle(choice1, choice2);
+};
+	console.log(compare(userChoice, computerChoice));
+	alert(compare(userChoice, computerChoice));
+</script>

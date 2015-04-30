@@ -1,0 +1,1007 @@
+<html>
+<head>
+<title>Data Structure Tests</title>
+<!-- Combo-handled YUI CSS files: -->
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?2.7.0/build/logger/assets/logger.css&2.7.0/build/yuitest/assets/testlogger.css">
+<!-- Combo-handled YUI JS files: -->
+<script type="text/javascript" src="http://yui.yahooapis.com/combo?2.7.0/build/yahoo-dom-event/yahoo-dom-event.js&2.7.0/build/logger/logger-min.js&2.7.0/build/yuitest/yuitest-min.js"></script>
+<script type="text/javascript" src="data-structures.js"></script>
+
+
+</head>
+<body>
+<h1>Data Structure Tests</h1>
+<script type="text/javascript">
+
+YAHOO.namespace("test");
+
+YAHOO.test.BinarySearchTree = (function(){
+    
+    var assert = YAHOO.util.Assert;
+    
+    //-------------------------------------------------------------------------
+    // Base Test Suite
+    //-------------------------------------------------------------------------
+    
+    var suite = new YAHOO.tool.TestSuite("Binary Search Tree Tests");
+    
+    //-------------------------------------------------------------------------
+    // Test Case for Iterator
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "iterator Tests",
+
+        setUp: function(){
+            this.tree = new BinarySearchTree();
+        },
+        
+        tearDown: function(){
+            delete this.tree;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+		testIterator: function(){
+            this.tree.add(1);
+            this.tree.add(2);
+            this.tree.add(3);
+            this.tree.add(4);
+            this.tree.add(5);
+            
+			var iterator = this.tree.createIterator();
+			
+			assert.isTrue( iterator instanceof Iterator, "iterator needs to be an instance of Iterator" );
+			
+            assert.areEqual(1, iterator.next().value);
+            assert.areEqual(2, iterator.next().value);
+            assert.areEqual(3, iterator.next().value);
+            assert.areEqual(4, iterator.next().value);
+            assert.areEqual(5, iterator.next().value);
+            assert.areEqual(null, iterator.next());
+ 
+		}
+		
+    }));
+	
+	//------------------------------------------------------------------------
+    // Test Case for adding
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "add() Tests",
+
+        setUp: function(){
+            this.tree = new BinarySearchTree();
+        },
+        
+        tearDown: function(){
+            delete this.tree;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testAddSingle: function(){
+            this.tree.add(5);
+            
+            assert.areEqual(1, this.tree.size(), "Tree should have one item.");
+            assert.areEqual(5, this.tree._root.value, "First item should have value of 5.");                                        
+        },
+        
+        testAddMultiple: function(){
+            this.tree.add(5);
+            this.tree.add(10);
+            
+            assert.areEqual(2, this.tree.size(), "Tree should have two items.");
+            assert.areEqual(5, this.tree._root.value, "First item should have value of 5.");                                        
+        },
+        
+        testAddDuplicates: function(){
+            this.tree.add(5);
+            this.tree.add(5);
+            
+            assert.areEqual(1, this.tree.size(), "Tree should have one item.");         
+        }
+    }));
+    
+    //-------------------------------------------------------------------------
+    // Test Case for contains()
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "contains() Tests",
+
+        setUp: function(){
+            this.tree = new BinarySearchTree();
+        },
+        
+        tearDown: function(){
+            delete this.tree;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testContains: function(){
+            this.tree.add(5);
+            
+            assert.isTrue(this.tree.contains(5));
+            assert.isFalse(this.tree.contains(10));
+                                      
+        }
+    }));    
+    
+    //-------------------------------------------------------------------------
+    // Test Case for removing values
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "remove() Tests",
+
+        setUp: function(){
+            this.tree = new BinarySearchTree();
+            this.tree.add(5);
+            this.tree.add(10);
+            this.tree.add(6);
+        },
+        
+        tearDown: function(){
+            delete this.tree;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testRemoveFirstItem: function(){
+            this.tree.remove(5);
+            assert.areEqual(2, this.tree.size(), "There should only be two items left.");
+            assert.areEqual(10, this.tree._root.value, "Root value should now be 10.");
+            assert.isFalse(this.tree.contains(5));
+        },
+        
+        testRemoveFirstItemToo: function(){
+            this.tree.remove(10);
+            this.tree.remove(5);
+            assert.areEqual(1, this.tree.size(), "There should only be one item left.");
+            assert.areEqual(6, this.tree._root.value, "Root value should now be 6.");
+            assert.isFalse(this.tree.contains(5));
+            assert.isFalse(this.tree.contains(10));
+        },
+        
+        testRemoveMiddleItem: function(){
+            this.tree.remove(10);
+            assert.areEqual(2, this.tree.size(), "There should only be two items left.");
+            assert.isFalse(this.tree.contains(10));
+        },
+        
+        testRemoveLastItem: function(){
+            this.tree.remove(6);
+            assert.areEqual(2, this.tree.size(), "There should only be two items left.");
+            assert.isFalse(this.tree.contains(6));
+        },
+
+        testRemoveLastAll: function(){
+            this.tree.remove(6);
+            this.tree.remove(5);
+            this.tree.remove(10);
+            assert.areEqual(0, this.tree.size(), "There should only be two items left.");
+            assert.isFalse(this.tree.contains(6));
+            assert.isFalse(this.tree.contains(5));
+            assert.isFalse(this.tree.contains(10));            
+        }                
+    }));        
+
+    //-------------------------------------------------------------------------
+    // Test Case for converting to an array
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "toArray() Tests",
+
+        setUp: function(){
+            this.tree = new BinarySearchTree();
+        },
+        
+        tearDown: function(){
+            delete this.tree;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testToArrayForEmptyList: function(){
+            var value = this.tree.toArray();
+            assert.isInstanceOf(Array, value, "Value should be an array.");
+            assert.areEqual(0, value.length, "Array should be empty.");
+        },
+        
+        testToArrayForOneItemList: function(){
+            this.tree.add(5);
+            var value = this.tree.toArray();
+            assert.isInstanceOf(Array, value, "Value should be an array.");
+            assert.areEqual(1, value.length, "Array should have 1 item.");
+            assert.areEqual(5, value[0], "The only item should be 5.");
+        },
+        
+        testToArrayForTwoItemList: function(){
+            this.tree.add(5);
+            this.tree.add(10);
+            var value = this.tree.toArray();
+            assert.isInstanceOf(Array, value, "Value should be an array.");
+            assert.areEqual(2, value.length, "Array should have 2 items.");
+            assert.areEqual(5, value[0], "The first item should be 5.");
+            assert.areEqual(10, value[1], "The second item should be 10.");
+        },
+        
+        testToArrayForMultipleItems: function(){
+            this.tree.add(55);
+            this.tree.add(10);
+            this.tree.add(29);
+            this.tree.add(40);
+            this.tree.add(10);
+            this.tree.add(5);
+            this.tree.add(16);
+            this.tree.add(25);
+            
+            var value = this.tree.toArray();
+            assert.isInstanceOf(Array, value, "Value should be an array.");
+            assert.areEqual(7, value.length, "Array should have 7 items.");
+            YAHOO.util.ArrayAssert.itemsAreEqual([5, 10, 16, 25, 29, 40, 55], value);
+       
+        
+        }
+
+                
+    }));    
+
+    //return it
+    return suite;
+
+})();
+
+YAHOO.test.DoublyLinkedList = (function(){
+    
+    var assert = YAHOO.util.Assert;
+    
+    //-------------------------------------------------------------------------
+    // Base Test Suite
+    //-------------------------------------------------------------------------
+    
+    var suite = new YAHOO.tool.TestSuite("Doubly Linked List Tests");
+    
+    //-------------------------------------------------------------------------
+    // Test Case for Iterator
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "iterator Tests",
+
+        setUp: function(){
+            this.list = new DoublyLinkedList();
+        },
+        
+        tearDown: function(){
+            delete this.list;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+		testIterator: function(){
+            this.list.add(1);
+            this.list.add(2);
+            this.list.add(3);
+            this.list.add(4);
+            this.list.add(5);
+            
+			var iterator = this.list.createIterator();
+			
+			assert.isTrue( iterator instanceof Iterator, "iterator needs to be an instance of Iterator" );
+			
+            assert.areEqual(1, iterator.next().data);
+            assert.areEqual(2, iterator.next().data);
+            assert.areEqual(3, iterator.next().data);
+            assert.areEqual(4, iterator.next().data);
+            assert.areEqual(5, iterator.next().data);
+            assert.areEqual(null, iterator.next());
+ 
+		}
+		
+    }));
+	
+    //-------------------------------------------------------------------------
+    // Test Case for adding
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "add() Tests",
+
+        setUp: function(){
+            this.list = new DoublyLinkedList();
+        },
+        
+        tearDown: function(){
+            delete this.list;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testAddSingle: function(){
+            this.list.add("Hi");
+            
+            assert.areEqual(1, this.list.size(), "List should have one item.");
+            assert.areEqual("Hi", this.list._head.data, "First item should have data of 'Hi'.");                    
+            assert.isNull(this.list._head.next, "The next pointer of the first item should be null.");                    
+        },
+        
+        testAddMultiple: function(){
+            this.list.add("Hi");
+            this.list.add("Yo");
+            
+            assert.areEqual(2, this.list.size(), "List should have one item.");
+            assert.areEqual("Hi", this.list._head.data, "First item should have data of 'Hi'.");
+            assert.isNull(this.list._head.next.next, "The next pointer of the second item should be null.");                    
+        }
+    }));
+
+    //-------------------------------------------------------------------------
+    // Test Case for retrieving values
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "item() Tests",
+
+        setUp: function(){
+            this.list = new DoublyLinkedList();
+            this.list.add("Hi");
+            this.list.add("Yo");
+            this.list.add("Bye");
+        },
+        
+        tearDown: function(){
+            delete this.list;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testGetFirstItem: function(){
+            var value = this.list.item(0);
+            assert.areEqual("Hi", value, "First item should be 'Hi'.");
+        },
+        
+        testGetMiddleItem: function(){
+            var value = this.list.item(1);
+            assert.areEqual("Yo", value, "Second item should be 'Yo'.");                   
+        },
+        
+        testGetLastItem: function(){
+            var value = this.list.item(2);
+            assert.areEqual("Bye", value, "Second item should be 'Bye'.");                   
+        },
+
+        testGetInvalidItem: function(){
+            var value = this.list.item(5);
+            assert.isNull(value, "Invalid items should return null.");                   
+        },
+
+                
+    }));    
+    
+    //-------------------------------------------------------------------------
+    // Test Case for removing values
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "remove() Tests",
+
+        setUp: function(){
+            this.list = new DoublyLinkedList();
+            this.list.add("Hi");
+            this.list.add("Yo");
+            this.list.add("Bye");
+        },
+        
+        tearDown: function(){
+            delete this.list;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testRemoveFirstItem: function(){
+            var value = this.list.remove(0);
+            assert.areEqual("Hi", value, "Removed item should be 'Hi'.");
+            assert.areEqual(2, this.list.size(), "There should only be two items left.");
+            assert.areEqual("Yo", this.list.item(0), "First item should now be 'Yo'.");
+            assert.areEqual("Bye", this.list.item(1), "Last item should now be 'Bye'.");
+            assert.isNull(this.list.item(2), "Item in position 2 should be null.");
+        },
+        
+        testRemoveMiddleItem: function(){
+            var value = this.list.remove(1);
+            assert.areEqual("Yo", value, "Removed item should be 'Yo'.");
+            assert.areEqual(2, this.list.size(), "There should only be two items left.");
+            assert.areEqual("Hi", this.list.item(0), "First item should now be 'Yo'.");
+            assert.areEqual("Bye", this.list.item(1), "Last item should now be 'Bye'.");
+            assert.isNull(this.list.item(2), "Item in position 2 should be null.");
+        },
+        
+        testRemoveLastItem: function(){
+            var value = this.list.remove(2);
+            assert.areEqual("Bye", value, "Removed item should be 'Bye'.");
+            assert.areEqual(2, this.list.size(), "There should only be two items left.");
+            assert.areEqual("Hi", this.list.item(0), "First item should now be 'Hi'.");
+            assert.areEqual("Yo", this.list.item(1), "Last item should now be 'Yo'.");
+            assert.isNull(this.list.item(2), "Item in position 2 should be null.");
+        }                
+    }));        
+
+    //-------------------------------------------------------------------------
+    // Test Case for converting to an array
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "toArray() Tests",
+
+        setUp: function(){
+            this.list = new DoublyLinkedList();
+        },
+        
+        tearDown: function(){
+            delete this.list;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testToArrayForEmptyList: function(){
+            var value = this.list.toArray();
+            assert.isInstanceOf(Array, value, "Value should be an array.");
+            assert.areEqual(0, value.length, "Array should be empty.");
+        },
+        
+        testToArrayForOneItemList: function(){
+            this.list.add("Hi");
+            var value = this.list.toArray();
+            assert.isInstanceOf(Array, value, "Value should be an array.");
+            assert.areEqual(1, value.length, "Array should have 1 item.");
+            assert.areEqual("Hi", value[0], "The only item should be 'Hi'.");
+        },
+        
+        testToArrayForTwoItemList: function(){
+            this.list.add("Hi");
+            this.list.add("Yo");
+            var value = this.list.toArray();
+            assert.isInstanceOf(Array, value, "Value should be an array.");
+            assert.areEqual(2, value.length, "Array should have 2 items.");
+            assert.areEqual("Hi", value[0], "The first item should be 'Hi'.");
+            assert.areEqual("Yo", value[1], "The second item should be 'Yo'.");
+        }
+
+                
+    }));    
+
+    //return it
+    return suite;
+
+})();
+
+YAHOO.test.LinkedListClassic = (function(){
+    
+    var assert = YAHOO.util.Assert;
+    
+    //-------------------------------------------------------------------------
+    // Base Test Suite
+    //-------------------------------------------------------------------------
+    
+    var suite = new YAHOO.tool.TestSuite("Linked List Classic Tests");
+    
+    //-------------------------------------------------------------------------
+    // Test Case for Iterator
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "iterator Tests",
+
+        setUp: function(){
+            this.list = new LinkedListClassic();
+        },
+        
+        tearDown: function(){
+            delete this.list;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+		testIterator: function(){
+            this.list.add(1);
+            this.list.add(2);
+            this.list.add(3);
+            this.list.add(4);
+            this.list.add(5);
+            
+			var iterator = this.list.createIterator();
+			
+			assert.isTrue( iterator instanceof Iterator, "iterator needs to be an instance of Iterator" );
+			
+            assert.areEqual(1, iterator.next().data);
+            assert.areEqual(2, iterator.next().data);
+            assert.areEqual(3, iterator.next().data);
+            assert.areEqual(4, iterator.next().data);
+            assert.areEqual(5, iterator.next().data);
+            assert.areEqual(null, iterator.next());
+ 
+		}
+		
+    }));
+	
+    //-------------------------------------------------------------------------
+    // Test Case for adding
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "add() Tests",
+
+        setUp: function(){
+            this.list = new LinkedListClassic();
+        },
+        
+        tearDown: function(){
+            delete this.list;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testAddSingle: function(){
+            this.list.add("Hi");
+            
+            assert.areEqual(1, this.list.size(), "List should have one item.");
+            assert.areEqual("Hi", this.list._head.data, "First item should have data of 'Hi'.");                    
+            assert.isNull(this.list._head.next, "The next pointer of the first item should be null.");                    
+        },
+        
+        testAddMultiple: function(){
+            this.list.add("Hi");
+            this.list.add("Yo");
+            
+            assert.areEqual(2, this.list.size(), "List should have one item.");
+            assert.areEqual("Hi", this.list._head.data, "First item should have data of 'Hi'.");
+            assert.isNull(this.list._head.next.next, "The next pointer of the second item should be null.");                    
+        }
+    }));
+
+    //-------------------------------------------------------------------------
+    // Test Case for retrieving values
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "item() Tests",
+
+        setUp: function(){
+            this.list = new LinkedListClassic();
+            this.list.add("Hi");
+            this.list.add("Yo");
+            this.list.add("Bye");
+        },
+        
+        tearDown: function(){
+            delete this.list;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testGetFirstItem: function(){
+            var value = this.list.item(0);
+            assert.areEqual("Hi", value, "First item should be 'Hi'.");
+        },
+        
+        testGetMiddleItem: function(){
+            var value = this.list.item(1);
+            assert.areEqual("Yo", value, "Second item should be 'Yo'.");                   
+        },
+        
+        testGetLastItem: function(){
+            var value = this.list.item(2);
+            assert.areEqual("Bye", value, "Second item should be 'Bye'.");                   
+        },
+
+        testGetInvalidItem: function(){
+            var value = this.list.item(5);
+            assert.isNull(value, "Invalid items should return null.");                   
+        },
+
+                
+    }));    
+    
+    //-------------------------------------------------------------------------
+    // Test Case for removing values
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "remove() Tests",
+
+        setUp: function(){
+            this.list = new LinkedListClassic();
+            this.list.add("Hi");
+            this.list.add("Yo");
+            this.list.add("Bye");
+        },
+        
+        tearDown: function(){
+            delete this.list;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testRemoveFirstItem: function(){
+            var value = this.list.remove(0);
+            assert.areEqual("Hi", value, "Removed item should be 'Hi'.");
+            assert.areEqual(2, this.list.size(), "There should only be two items left.");
+            assert.areEqual("Yo", this.list.item(0), "First item should now be 'Yo'.");
+            assert.areEqual("Bye", this.list.item(1), "Last item should now be 'Bye'.");
+            assert.isNull(this.list.item(2), "Item in position 2 should be null.");
+        },
+        
+        testRemoveMiddleItem: function(){
+            var value = this.list.remove(1);
+            assert.areEqual("Yo", value, "Removed item should be 'Yo'.");
+            assert.areEqual(2, this.list.size(), "There should only be two items left.");
+            assert.areEqual("Hi", this.list.item(0), "First item should now be 'Yo'.");
+            assert.areEqual("Bye", this.list.item(1), "Last item should now be 'Bye'.");
+            assert.isNull(this.list.item(2), "Item in position 2 should be null.");
+        },
+        
+        testRemoveLastItem: function(){
+            var value = this.list.remove(2);
+            assert.areEqual("Bye", value, "Removed item should be 'Bye'.");
+            assert.areEqual(2, this.list.size(), "There should only be two items left.");
+            assert.areEqual("Hi", this.list.item(0), "First item should now be 'Hi'.");
+            assert.areEqual("Yo", this.list.item(1), "Last item should now be 'Yo'.");
+            assert.isNull(this.list.item(2), "Item in position 2 should be null.");
+        }                
+    }));        
+
+    //-------------------------------------------------------------------------
+    // Test Case for converting to an array
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "toArray() Tests",
+
+        setUp: function(){
+            this.list = new LinkedListClassic();
+        },
+        
+        tearDown: function(){
+            delete this.list;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testToArrayForEmptyList: function(){
+            var value = this.list.toArray();
+            assert.isInstanceOf(Array, value, "Value should be an array.");
+            assert.areEqual(0, value.length, "Array should be empty.");
+        },
+        
+        testToArrayForOneItemList: function(){
+            this.list.add("Hi");
+            var value = this.list.toArray();
+            assert.isInstanceOf(Array, value, "Value should be an array.");
+            assert.areEqual(1, value.length, "Array should have 1 item.");
+            assert.areEqual("Hi", value[0], "The only item should be 'Hi'.");
+        },
+        
+        testToArrayForTwoItemList: function(){
+            this.list.add("Hi");
+            this.list.add("Yo");
+            var value = this.list.toArray();
+            assert.isInstanceOf(Array, value, "Value should be an array.");
+            assert.areEqual(2, value.length, "Array should have 2 items.");
+            assert.areEqual("Hi", value[0], "The first item should be 'Hi'.");
+            assert.areEqual("Yo", value[1], "The second item should be 'Yo'.");
+        }
+
+                
+    }));    
+
+    //return it
+    return suite;
+
+})();
+
+YAHOO.test.LinkedList = (function(){
+    
+    var assert = YAHOO.util.Assert;
+    
+    //-------------------------------------------------------------------------
+    // Base Test Suite
+    //-------------------------------------------------------------------------
+    
+    var suite = new YAHOO.tool.TestSuite("Linked List Tests");
+    
+    //-------------------------------------------------------------------------
+    // Test Case for Iterator
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "iterator Tests",
+
+        setUp: function(){
+            this.list = new LinkedList();
+        },
+        
+        tearDown: function(){
+            delete this.list;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+		testIterator: function(){
+            this.list.add(1);
+            this.list.add(2);
+            this.list.add(3);
+            this.list.add(4);
+            this.list.add(5);
+            
+			var iterator = this.list.createIterator();
+			
+			assert.isTrue( iterator instanceof Iterator, "iterator needs to be an instance of Iterator" );
+			
+            assert.areEqual(1, iterator.next().data);
+            assert.areEqual(2, iterator.next().data);
+            assert.areEqual(3, iterator.next().data);
+            assert.areEqual(4, iterator.next().data);
+            assert.areEqual(5, iterator.next().data);
+            assert.areEqual(null, iterator.next());
+ 
+		}
+		
+    }));
+	
+    //-------------------------------------------------------------------------
+    // Test Case for adding
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "add() Tests",
+
+        setUp: function(){
+            this.list = new LinkedList();
+        },
+        
+        tearDown: function(){
+            delete this.list;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testAddSingle: function(){
+            this.list.add("Hi");
+            
+            assert.areEqual(1, this.list.size(), "List should have one item.");
+            assert.areEqual("Hi", this.list._head.data, "First item should have data of 'Hi'.");                    
+            assert.isNull(this.list._head.next, "The next pointer of the first item should be null.");                    
+        },
+        
+        testAddMultiple: function(){
+            this.list.add("Hi");
+            this.list.add("Yo");
+            
+            assert.areEqual(2, this.list.size(), "List should have one item.");
+            assert.areEqual("Hi", this.list._head.data, "First item should have data of 'Hi'.");
+            assert.isNull(this.list._head.next.next, "The next pointer of the second item should be null.");                    
+        }
+    }));
+
+    //-------------------------------------------------------------------------
+    // Test Case for retrieving values
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "item() Tests",
+
+        setUp: function(){
+            this.list = new LinkedList();
+            this.list.add("Hi");
+            this.list.add("Yo");
+            this.list.add("Bye");
+        },
+        
+        tearDown: function(){
+            delete this.list;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testGetFirstItem: function(){
+            var value = this.list.item(0);
+            assert.areEqual("Hi", value, "First item should be 'Hi'.");
+        },
+        
+        testGetMiddleItem: function(){
+            var value = this.list.item(1);
+            assert.areEqual("Yo", value, "Second item should be 'Yo'.");                   
+        },
+        
+        testGetLastItem: function(){
+            var value = this.list.item(2);
+            assert.areEqual("Bye", value, "Second item should be 'Bye'.");                   
+        },
+
+        testGetInvalidItem: function(){
+            var value = this.list.item(5);
+            assert.isNull(value, "Invalid items should return null.");                   
+        },
+
+                
+    }));    
+    
+    //-------------------------------------------------------------------------
+    // Test Case for removing values
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "remove() Tests",
+
+        setUp: function(){
+            this.list = new LinkedList();
+            this.list.add("Hi");
+            this.list.add("Yo");
+            this.list.add("Bye");
+        },
+        
+        tearDown: function(){
+            delete this.list;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testRemoveFirstItem: function(){
+            var value = this.list.remove(0);
+            assert.areEqual("Hi", value, "Removed item should be 'Hi'.");
+            assert.areEqual(2, this.list.size(), "There should only be two items left.");
+            assert.areEqual("Yo", this.list.item(0), "First item should now be 'Yo'.");
+            assert.areEqual("Bye", this.list.item(1), "Last item should now be 'Bye'.");
+            assert.isNull(this.list.item(2), "Item in position 2 should be null.");
+        },
+        
+        testRemoveMiddleItem: function(){
+            var value = this.list.remove(1);
+            assert.areEqual("Yo", value, "Removed item should be 'Yo'.");
+            assert.areEqual(2, this.list.size(), "There should only be two items left.");
+            assert.areEqual("Hi", this.list.item(0), "First item should now be 'Yo'.");
+            assert.areEqual("Bye", this.list.item(1), "Last item should now be 'Bye'.");
+            assert.isNull(this.list.item(2), "Item in position 2 should be null.");
+        },
+        
+        testRemoveLastItem: function(){
+            var value = this.list.remove(2);
+            assert.areEqual("Bye", value, "Removed item should be 'Bye'.");
+            assert.areEqual(2, this.list.size(), "There should only be two items left.");
+            assert.areEqual("Hi", this.list.item(0), "First item should now be 'Hi'.");
+            assert.areEqual("Yo", this.list.item(1), "Last item should now be 'Yo'.");
+            assert.isNull(this.list.item(2), "Item in position 2 should be null.");
+        }                
+    }));        
+
+    //-------------------------------------------------------------------------
+    // Test Case for converting to an array
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "toArray() Tests",
+
+        setUp: function(){
+            this.list = new LinkedList();
+        },
+        
+        tearDown: function(){
+            delete this.list;
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testToArrayForEmptyList: function(){
+            var value = this.list.toArray();
+            assert.isInstanceOf(Array, value, "Value should be an array.");
+            assert.areEqual(0, value.length, "Array should be empty.");
+        },
+        
+        testToArrayForOneItemList: function(){
+            this.list.add("Hi");
+            var value = this.list.toArray();
+            assert.isInstanceOf(Array, value, "Value should be an array.");
+            assert.areEqual(1, value.length, "Array should have 1 item.");
+            assert.areEqual("Hi", value[0], "The only item should be 'Hi'.");
+        },
+        
+        testToArrayForTwoItemList: function(){
+            this.list.add("Hi");
+            this.list.add("Yo");
+            var value = this.list.toArray();
+            assert.isInstanceOf(Array, value, "Value should be an array.");
+            assert.areEqual(2, value.length, "Array should have 2 items.");
+            assert.areEqual("Hi", value[0], "The first item should be 'Hi'.");
+            assert.areEqual("Yo", value[1], "The second item should be 'Yo'.");
+        }
+
+                
+    }));    
+
+    //return it
+    return suite;
+
+})();
+
+(function (){
+    //create the logger
+    var logger = new YAHOO.tool.TestLogger();
+    
+    //add the tests
+    YAHOO.tool.TestRunner.add(YAHOO.test.BinarySearchTree);
+    YAHOO.tool.TestRunner.add(YAHOO.test.DoublyLinkedList);
+    YAHOO.tool.TestRunner.add(YAHOO.test.LinkedListClassic);
+    YAHOO.tool.TestRunner.add(YAHOO.test.LinkedList);
+    YAHOO.tool.TestRunner.run();
+
+})();
+
+
+</script>
+</body>
+</html>
