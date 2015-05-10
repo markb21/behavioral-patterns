@@ -21,7 +21,8 @@ var tie = {
 
 var rockWins = {
 	handle: function(choice1, choice2){
-		if((choice1 === "rock" || choice2 === "rock") && (choice1 === "scissors" || choice2 === "scissors")) 
+		if((choice1 === "rock" || choice2 === "rock") 
+			&& (choice1 === "scissors" || choice2 === "scissors")) 
 			return "rock wins";
 		else
 			return rockWins.__proto__.handle(choice1, choice2);
